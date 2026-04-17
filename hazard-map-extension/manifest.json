@@ -1,0 +1,42 @@
+{
+	"manifest_version": 3,
+	"name": "Hazard Map Overlay for Real Estate",
+	"version": "0.1.0",
+	"description": "不動産物件詳細ページにハザードマップを重畳表示する拡張機能",
+	"permissions": ["storage"],
+	"host_permissions": [
+		"https://suumo.jp/*",
+		"https://www.homes.co.jp/*",
+		"https://msearch.gsi.go.jp/*",
+		"https://cyberjapandata.gsi.go.jp/*",
+		"https://disaportaldata.gsi.go.jp/*"
+	],
+	"background": {
+		"service_worker": "src/background/service-worker.js"
+	},
+	"content_scripts": [
+		{
+			"matches": ["https://suumo.jp/*", "https://www.homes.co.jp/*"],
+			"js": ["src/content/content.js"],
+			"css": ["src/content/content.css"],
+			"run_at": "document_idle"
+		}
+	],
+	"options_page": "src/options/options.html",
+	"web_accessible_resources": [
+		{
+			"resources": [
+				"src/map/map.html",
+				"src/map/map.js",
+				"src/map/map.css",
+				"vendor/leaflet/*"
+			],
+			"matches": ["https://suumo.jp/*", "https://www.homes.co.jp/*"]
+		}
+	],
+	"icons": {
+		"16": "assets/icons/16.png",
+		"48": "assets/icons/48.png",
+		"128": "assets/icons/128.png"
+	}
+}
