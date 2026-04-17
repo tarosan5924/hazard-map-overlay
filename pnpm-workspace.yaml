@@ -1,0 +1,4 @@
+onlyBuiltDependencies:
+  - lefthook
+
+minimumReleaseAge: 10080
