@@ -1,5 +1,10 @@
-// SUUMOのセレクタ
-const SUUMO_INSERT_SELECTOR = ".mt9";
+const FALLBACK_SELECTORS = [
+	{
+		domain: "suumo.jp",
+		addressSelector: ".fl.w296.bw",
+		insertSelector: ".mt9",
+	},
+];
 
 function normalizeAddress(raw) {
 	return raw
@@ -8,12 +13,15 @@ function normalizeAddress(raw) {
 		.trim();
 }
 
-function extractSuumoAddress() {
-	const el = [...document.querySelectorAll(".fl.w296.bw *")].find(
+function extractAddress(addressSelector) {
+	// リーフノードで「／」含む要素 → SUUMOの住所フォーマット対応
+	const leaf = [...document.querySelectorAll(`${addressSelector} *`)].find(
 		(e) => e.children.length === 0 && e.textContent.includes("／"),
 	);
-	if (!el) return null;
-	return normalizeAddress(el.textContent.split("／")[0]);
+	if (leaf) return normalizeAddress(leaf.textContent.split("／")[0]);
+
+	const el = document.querySelector(addressSelector);
+	return el ? normalizeAddress(el.textContent) : null;
 }
 
 function waitForElement(selector, timeout = 8000) {
@@ -58,13 +66,23 @@ function insertMap(target, lat, lng) {
 	target.insertAdjacentElement("afterend", iframe);
 }
 
-async function main() {
-	await waitForElement(".fl.w296.bw");
+async function getSiteConfig() {
+	const hostname = location.hostname;
+	const data = await chrome.storage.sync.get("selectors");
+	const selectors = data.selectors ?? FALLBACK_SELECTORS;
+	return selectors.find((s) => hostname.includes(s.domain)) ?? null;
+}
 
-	const address = extractSuumoAddress();
+async function main() {
+	const config = await getSiteConfig();
+	if (!config) return;
+
+	await waitForElement(config.addressSelector);
+
+	const address = extractAddress(config.addressSelector);
 	if (!address) return;
 
-	const insertTarget = document.querySelector(SUUMO_INSERT_SELECTOR);
+	const insertTarget = document.querySelector(config.insertSelector);
 	if (!insertTarget) return;
 
 	const result = await chrome.runtime.sendMessage({ type: "GEOCODE", address });

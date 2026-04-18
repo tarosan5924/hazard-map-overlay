@@ -1,12 +1,12 @@
 export const DEFAULT_SELECTORS = [
 	{
 		domain: "suumo.jp",
-		addressSelector: ".property_view_detail-text",
-		insertSelector: ".property_view_main-body",
+		addressSelector: ".fl.w296.bw",
+		insertSelector: ".mt9",
 	},
 	{
 		domain: "www.homes.co.jp",
-		addressSelector: ".mod-bukkenSpec .spec-table td:first-child",
+		addressSelector: ".mod-bukkenSpec .spec-table td",
 		insertSelector: ".bukkenDetail",
 	},
 ];

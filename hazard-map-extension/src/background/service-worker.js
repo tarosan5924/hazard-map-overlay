@@ -1,3 +1,5 @@
+import { DEFAULT_SELECTORS } from "../shared/selectors.js";
+
 const CACHE_KEY = "geocode_cache";
 const CACHE_MAX = 100;
 
@@ -35,6 +37,13 @@ async function geocode(address) {
 
 	return result;
 }
+
+chrome.runtime.onInstalled.addListener(async () => {
+	const data = await chrome.storage.sync.get("selectors");
+	if (!data.selectors) {
+		await chrome.storage.sync.set({ selectors: DEFAULT_SELECTORS });
+	}
+});
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 	if (message.type !== "GEOCODE") return false;
