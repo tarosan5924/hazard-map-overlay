@@ -32,14 +32,14 @@
   </table>
 
   <div class="btn-row">
-    <button id="btn-add">行を追加</button>
-    <button id="btn-save">保存</button>
-    <button id="btn-export">JSONエクスポート</button>
+    <button type="button" id="btn-add">行を追加</button>
+    <button type="button" id="btn-save">保存</button>
+    <button type="button" id="btn-export">JSONエクスポート</button>
     <label style="cursor:pointer">
       <button type="button" onclick="document.getElementById('import-input').click()">JSONインポート</button>
       <input type="file" id="import-input" accept=".json" style="display:none">
     </label>
-    <button id="btn-reset">デフォルトに戻す</button>
+    <button type="button" id="btn-reset">デフォルトに戻す</button>
   </div>
 
   <div id="status"></div>
