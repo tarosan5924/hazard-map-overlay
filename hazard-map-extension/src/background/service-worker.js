@@ -1,7 +1,10 @@
+import { createQueue } from "../shared/async-queue.js";
 import { DEFAULT_SELECTORS } from "../shared/selectors.js";
 
 const CACHE_KEY = "geocode_cache";
 const CACHE_MAX = 100;
+const enqueue = createQueue(3);
+const inflight = new Map();
 
 async function getCache() {
 	const result = await chrome.storage.session.get(CACHE_KEY);
@@ -12,10 +15,7 @@ async function setCache(cache) {
 	await chrome.storage.session.set({ [CACHE_KEY]: cache });
 }
 
-async function geocode(address) {
-	const cache = await getCache();
-	if (cache[address]) return cache[address];
-
+async function fetchFromGSI(address) {
 	const url = `https://msearch.gsi.go.jp/address-search/AddressSearch?q=${encodeURIComponent(address)}`;
 	let data;
 	try {
@@ -30,12 +30,28 @@ async function geocode(address) {
 	const [lng, lat] = data[0].geometry.coordinates;
 	const result = { lat, lng };
 
+	const cache = await getCache();
 	const keys = Object.keys(cache);
 	if (keys.length >= CACHE_MAX) delete cache[keys[0]];
 	cache[address] = result;
 	await setCache(cache);
 
 	return result;
+}
+
+async function geocode(address) {
+	const cache = await getCache();
+	if (cache[address]) return cache[address];
+
+	if (inflight.has(address)) return inflight.get(address);
+
+	const p = enqueue(() => fetchFromGSI(address));
+	inflight.set(address, p);
+	try {
+		return await p;
+	} finally {
+		inflight.delete(address);
+	}
 }
 
 chrome.runtime.onInstalled.addListener(async () => {

@@ -6,6 +6,10 @@
 	margin: 16px 0;
 }
 
+.hazard-map-iframe--list {
+	height: 240px;
+}
+
 .hazard-ext-error {
 	padding: 12px;
 	background: #fff3cd;

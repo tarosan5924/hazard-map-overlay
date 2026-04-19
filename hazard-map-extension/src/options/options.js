@@ -1,11 +1,22 @@
 const DEFAULT_SELECTORS = [
 	{
 		domain: "suumo.jp",
+		urlPattern: "/ichiran/",
+		cardSelector: ".property_unit",
+		addressSelector: "所在地",
+		insertSelector: ".property_unit-body",
+	},
+	{
+		domain: "suumo.jp",
+		urlPattern: "",
+		cardSelector: "",
 		addressSelector: ".fl.w296.bw",
 		insertSelector: ".mt9",
 	},
 	{
 		domain: "www.homes.co.jp",
+		urlPattern: "",
+		cardSelector: "",
 		addressSelector: ".mod-bukkenSpec .spec-table td",
 		insertSelector: ".bukkenDetail",
 	},
@@ -23,11 +34,19 @@ function showStatus(msg, isError = false) {
 }
 
 function createRow(
-	entry = { domain: "", addressSelector: "", insertSelector: "" },
+	entry = {
+		domain: "",
+		urlPattern: "",
+		cardSelector: "",
+		addressSelector: "",
+		insertSelector: "",
+	},
 ) {
 	const tr = document.createElement("tr");
 	tr.innerHTML = `
 		<td><input type="text" name="domain" value="${escapeHtml(entry.domain)}"></td>
+		<td><input type="text" name="urlPattern" value="${escapeHtml(entry.urlPattern ?? "")}"></td>
+		<td><input type="text" name="cardSelector" value="${escapeHtml(entry.cardSelector ?? "")}"></td>
 		<td><input type="text" name="addressSelector" value="${escapeHtml(entry.addressSelector)}"></td>
 		<td><input type="text" name="insertSelector" value="${escapeHtml(entry.insertSelector)}"></td>
 		<td><button class="btn-delete">削除</button></td>
@@ -47,6 +66,9 @@ function readRows() {
 	return [...tbody.querySelectorAll("tr")]
 		.map((tr) => ({
 			domain: tr.querySelector('[name="domain"]').value.trim(),
+			urlPattern: tr.querySelector('[name="urlPattern"]').value.trim() || null,
+			cardSelector:
+				tr.querySelector('[name="cardSelector"]').value.trim() || null,
 			addressSelector: tr
 				.querySelector('[name="addressSelector"]')
 				.value.trim(),
