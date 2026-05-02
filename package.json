@@ -13,6 +13,6 @@
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.12",
 		"lefthook": "^2.1.6",
-		"vitest": "^4.1.4"
+		"vitest": "^4.1.5"
 	}
 }
